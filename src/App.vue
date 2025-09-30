@@ -1,41 +1,49 @@
 <script setup lang="ts">
-import { AppBannerProvider, AppDialogProvider, AppDrawerProvider } from '@/components'
-import { visible as bannerVisible } from '@/hooks/useBanner/bannerContext'
-import { useBanner } from '@/hooks'
-import { useUserStore } from '@/stores'
+import type { LocationQueryValue } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { AppLogin } from '@/components'
+import { useGlobalDialog } from '@/hooks'
+import { RouteQuery } from '@/shared'
 
-const route = useRoute()
+const router = useRouter()
 
-// 根据路由名称切换网页标题
-const routeName = computed(() => `${route.meta.title ? route.meta.title : import.meta.env.VITE_TITLE}`)
-useTitle(routeName, { titleTemplate: '%s' })
+const { DialogService } = useGlobalDialog()
 
-// 开发模式下显示 banner
-const { show } = useBanner()
-import.meta.env.DEV && show(import.meta.env.VITE_ENV_BANNER)
+const queryHandlers = new Map<string, (value: LocationQueryValue | LocationQueryValue[]) => void | Promise<void>>([
+  [RouteQuery.Invitation.getKey(), (value) => {
+    try {
+      if (Array.isArray(value))
+        throw new Error('存在多重邀请码参数')
+      if (!value)
+        throw new Error('邀请码参数为空')
+      const { code, username } = RouteQuery.Invitation.parse(value)
+      DialogService
+        .props({
+          code,
+          username,
+          isRegisterMode: true,
+        })
+        .open(AppLogin)
+    }
+    catch (err) {
+      ElMessage.error(`邀请码解析失败，原因为：${err instanceof Error ? err.message : err}`)
+    }
+  }],
+])
 
-// 预加载任务
-useUserStore().preloadMission()
+onMounted(async () => {
+  await nextTick()
+  const query = structuredClone(router.currentRoute.value.query)
+  await router.replace(router.currentRoute.value.path)
+  await Promise.allSettled(Object.entries(query).map(async ([key, value]) => {
+    const handler = queryHandlers.get(key)
+    if (!handler)
+      return
+    await handler(value)
+  }))
+})
 </script>
 
 <template>
-  <div
-    class="w-full h-full flex flex-col items-stretch transition-all duration-200"
-    :class="{
-      'pt-8': bannerVisible,
-      'pt-0': !bannerVisible,
-    }"
-  >
-    <router-view v-slot="{ Component }">
-      <Transition name="fade" mode="out-in" appear>
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
-      </Transition>
-    </router-view>
-  </div>
-
-  <AppBannerProvider />
-  <AppDrawerProvider />
-  <AppDialogProvider />
+  <router-view />
 </template>

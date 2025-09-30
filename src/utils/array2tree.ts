@@ -1,47 +1,47 @@
-import type { AnyObject } from '@/shared'
-
-export interface Array2TreeOptions {
+export interface Array2TreeOptions<T, C, I> {
   /** 子节点数组的 key 名 */
-  childrenKey?: string
-  /** 当前节点 id 的 key 名 */
-  idKey?: string
-  /** 父节点 id 的 key 名 */
-  pidKey?: string
+  childrenKey: C
+  /** 当前节点 id */
+  getId: (item: T) => I
+  /** 父节点 id */
+  getPid: (item: T) => I
   /** 根级节点的 id 号 */
-  rootId?: string | number | symbol | bigint
+  rootId: I
+}
+
+type AddChildrenKeyToObject<T, K extends string> = {
+  [P in keyof T | K]: P extends keyof T ? T[P] : AddChildrenKeyToObject<T, K>[];
 }
 
 /**
  * 将数组转换为具有上下级关系的树形结构
  * 每个对象必须包含能判断父子级关系的字段
  */
-export const array2Tree = <T extends AnyObject>(items: T[], options: Array2TreeOptions = {}) => {
-  const { childrenKey = 'children', idKey = 'id', pidKey = 'pid', rootId = 0 } = options
+export const array2Tree = <T extends object, C extends string, I extends string | number>(
+  items: T[],
+  options: Array2TreeOptions<T, C, I>,
+) => {
+  const {
+    childrenKey,
+    getId,
+    getPid,
+    rootId,
+  } = options
 
-  const itemMap: AnyObject = {}
+  const itemMap = items.reduce((map, item) => map.set(getId(item), {
+    ...item,
+    [childrenKey]: [],
+  } as AddChildrenKeyToObject<T, C>), new Map<I, AddChildrenKeyToObject<T, C>>())
 
   return items.reduce((result, item) => {
-    const id = item[idKey]
-    const pid = item[pidKey]
-
-    !itemMap[id] && (itemMap[id] = {
-      [childrenKey]: [],
-    })
-    itemMap[id] = {
-      ...item,
-      [childrenKey]: itemMap[id][childrenKey],
+    const id = getId(item)
+    const pid = getPid(item)
+    const covertItem = itemMap.get(id)!
+    if (pid !== rootId) {
+      void (itemMap.get(pid)?.[childrenKey] as (AddChildrenKeyToObject<T, C>[] | undefined))?.push(covertItem)
+      return result
     }
-
-    const treeItem = itemMap[id]
-
-    if (pid === rootId) {
-      result.push(treeItem)
-    }
-    else {
-      !itemMap[pid] && (itemMap[pid] = { [childrenKey]: [] })
-      itemMap[pid][childrenKey].push(treeItem)
-    }
-
+    result.push(covertItem)
     return result
-  }, [] as (T & { children?: T[] })[])
+  }, [] as AddChildrenKeyToObject<T, C>[])
 }

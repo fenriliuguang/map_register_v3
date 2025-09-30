@@ -1,7 +1,7 @@
-import { ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import Api from '@/api/api'
 import { messageFrom } from '@/utils'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref } from 'vue'
 
 export interface SelectedHookOptions {
   onBatchDeleteSuccess?: () => void
@@ -31,7 +31,7 @@ export const useSelected = (options: SelectedHookOptions = {}) => {
     const missions = selected.value.map(({ id }) => {
       if (!id)
         return undefined
-      return Api.sysUserController.deleteUser({ workId: id })
+      return Api.user.deleteUser({ workId: id })
     })
     try {
       batchDeleteLoading.value = true
@@ -40,7 +40,9 @@ export const useSelected = (options: SelectedHookOptions = {}) => {
       onBatchDeleteSuccess?.()
     }
     catch (err) {
-      ElMessage.error(messageFrom(err))
+      ElMessage.error({
+        message: `删除用户失败，原因为：${messageFrom(err)}`,
+      })
     }
     finally {
       batchDeleteLoading.value = false

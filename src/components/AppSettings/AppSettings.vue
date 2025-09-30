@@ -1,97 +1,155 @@
 <script lang="ts" setup>
-import SettingItem from './SettingItem.vue'
-import { localSettings, useItemStore, useMarkerStore } from '@/stores'
+import type { ElSwitch } from 'element-plus'
+import { useTheme } from '@/hooks'
+import { usePreferenceStore } from '@/stores'
+import { transitionToggleSchema } from '@/utils'
+import * as El from '@element-plus/icons-vue'
+import {
+  ModuleAbout,
+  ModuleApp,
+  ModuleDashboard,
+  ModuleDatabase,
+  ModuleDeveloper,
+  ModuleManager,
+  ModuleMapSetting,
+  ModuleNetwork,
+} from './modules'
 
-/** 计算缓存大小 */
-const usageStorage = ref(0)
-const quotaStorage = ref(0)
-const usagePercentage = computed(() => Math.floor(100 * (usageStorage.value / quotaStorage.value) || 0))
-const calculateCaches = async () => {
-  const { usage = 0, quota = 0 } = (await navigator.storage.estimate())
-  usageStorage.value = usage / (2 ** (10 * 3))
-  quotaStorage.value = quota / 10 ** 9
+const emits = defineEmits<{
+  close: []
+}>()
+
+const { isDark } = useTheme()
+const preferenceStore = usePreferenceStore()
+
+const settingOptions: { key: string, name: string, is: Component, icon?: Component }[] = [
+  { key: 'dashboard', name: '基本信息', is: ModuleDashboard, icon: El.Monitor },
+  { key: 'app', name: '应用', is: ModuleApp, icon: El.Box },
+  { key: 'mapsetting', name: '地图', is: ModuleMapSetting, icon: El.MapLocation },
+  { key: 'manager', name: '管理组件', is: ModuleManager, icon: El.Files },
+  { key: 'database', name: '数据库', is: ModuleDatabase, icon: El.Coin },
+  { key: 'network', name: '网络', is: ModuleNetwork, icon: El.MostlyCloudy },
+  { key: 'developer', name: '开发者', is: ModuleDeveloper, icon: El.TurnOff },
+  { key: 'about', name: '关于空荧后厨', is: ModuleAbout, icon: El.Star },
+]
+
+const activedKey = computed({
+  get: () => preferenceStore.settingActivedKey || settingOptions[0].key,
+  set: (v) => {
+    preferenceStore.settingActivedKey = v
+  },
+})
+
+const show = ref(false)
+
+const contentRef = ref<HTMLElement>()
+
+const switchRef = ref<InstanceType<typeof ElSwitch>>()
+
+const beforeChange = async () => {
+  const { resolve, promise } = Promise.withResolvers<boolean>()
+
+  const switchElement = switchRef.value?.$el as HTMLElement
+  const rect = switchElement.getBoundingClientRect()
+  const x = rect.left + rect.width / 2
+  const y = rect.top + rect.height / 2
+
+  transitionToggleSchema(x, y, () => {
+    resolve(true)
+  })
+
+  return await promise
 }
-calculateCaches()
-
-/** 删除全部缓存 */
-const cacheLaoding = ref(false)
-const cleatAllCaches = async () => {
-  try {
-    cacheLaoding.value = true
-    const cacheNames = await caches.keys()
-    const missions = cacheNames.map(cacheName => caches.delete(cacheName))
-    await Promise.all(missions)
-    await calculateCaches()
-  }
-  catch {
-    // no action
-  }
-  finally {
-    cacheLaoding.value = false
-  }
-}
-
-const itemStore = useItemStore()
-const markerStore = useMarkerStore()
 </script>
 
 <template>
-  <div class="setting-panel p-4 flex flex-col">
-    <SettingItem label="自动定位加载点" content="点位加载完毕后移动到点集的几何中心">
-      <el-switch v-model="localSettings.moveToCenter" />
-    </SettingItem>
+  <div
+    class="
+      w-[800px] h-[600px] overflow-hidden
+      max-w-[90dvw] max-h-[100dvh]
+      flex flex-col
+      bg-[var(--el-bg-color)]
+      transition-[background-color,width]
+      rounded
+      text-[var(--el-text-color-primary)]
+    "
+  >
+    <div class="h-9 flex justify-between items-center p-0.5 mb-2">
+      <div class="flex items-center gap-1">
+        <span class="hidden max-[800px]:flex">
+          <el-button text :icon="El.Expand" @click="show = !show" />
+        </span>
+        <span class="leading-9 px-2">设置</span>
+        <el-switch
+          ref="switchRef"
+          v-model="isDark"
+          :active-action-icon="El.Moon"
+          :inactive-action-icon="El.Sunny"
+          :before-change="beforeChange"
+          style="
+            --el-switch-on-color: var(--el-fill-color-darker);
+          "
+        />
+      </div>
+      <div>
+        <el-button
+          text
+          type="danger"
+          style="--el-fill-color-light: var(--el-color-danger-light-7); --el-fill-color: var(--el-color-danger-light-9);"
+          :icon="El.Close"
+          @click="() => emits('close')"
+        />
+      </div>
+    </div>
 
-    <SettingItem label="自动跳转筛选器" content="筛选器满足选择条件时自动跳转到下一级">
-      <el-switch v-model="localSettings.autoTurnNext" />
-    </SettingItem>
-
-    <SettingItem label="缓存">
-      <template #content>
-        <div class="flex flex-col gap-1">
-          <el-progress class="progress-base-radius" text-inside :stroke-width="20" :percentage="usagePercentage" />
-          <div>缓存使用情况： {{ usageStorage.toFixed(1) }} / {{ quotaStorage.toFixed(1) }} GB。存储配额由浏览器给出，并非实际可用空间。</div>
+    <div class="relative flex-1 flex overflow-hidden" @click="show && (show = false)">
+      <div class="overflow-visible transition-[width] max-[800px]:w-0 w-[150px]" @click.stop="">
+        <div
+          class="
+            w-[150px] h-full flex flex-col px-2
+            absolute left-0
+            bg-[var(--el-bg-color)]
+            translate-x-0
+            transition-[background-color,transform]
+            z-10
+          "
+          :class="[show ? '' : 'max-[800px]:-translate-x-full']"
+        >
+          <div
+            v-for="setting in settingOptions"
+            :key="setting.key"
+            class="py-0.5 text-sm overflow-hidden group cursor-pointer"
+            @click="(activedKey = setting.key) && (show = false)"
+          >
+            <div
+              class="px-2 py-1 w-full h-8 overflow-hidden flex items-center gap-2 transition-[color,background-color] rounded"
+              :class="activedKey === setting.key
+                ? 'bg-[var(--el-color-primary-light-9)] text-[var(--el-color-primary)]'
+                : 'group-hover:bg-[var(--el-fill-color-light)] group-active:bg-[var(--el-fill-color-darker)]'"
+            >
+              <el-icon v-if="setting.icon">
+                <component :is="setting.icon" />
+              </el-icon>
+              <span>{{ setting.name }}</span>
+            </div>
+            <Teleport v-if="contentRef && activedKey === setting.key" :to="contentRef">
+              <component :is="setting.is" />
+            </Teleport>
+          </div>
         </div>
-      </template>
-      <el-button :loading="cacheLaoding" @click="cleatAllCaches">
-        删除缓存
-      </el-button>
-    </SettingItem>
+      </div>
 
-    <SettingItem
-      label="物品数据"
-      :content="`已存储物品数据 ${itemStore.total} 项，距离下次更新剩余 ${Math.floor(itemStore.updateAllRestTime / 1000)} 秒。`"
-    >
-      <el-button :loading="itemStore.updateAllLoading" @click="itemStore.backgroundUpdate">
-        更新物品
-      </el-button>
-    </SettingItem>
-
-    <SettingItem
-      label="点位数据"
-      :content="`已存储点位数据 ${markerStore.total} 项，距离下次更新剩余 ${Math.floor(markerStore.updateAllRestTime / 1000)} 秒。`"
-    >
-      <el-button :loading="markerStore.updateAllLoading" @click="markerStore.backgroundUpdate">
-        更新点位
-      </el-button>
-    </SettingItem>
-
-    <SettingItem label="定时更新" content="定时更新物品和点位数据的时间间隔（分钟），定时修改只会在下次更新后生效。">
-      <el-input-number v-model="localSettings.autoUpdateInterval" :min="10" :max="120" :step="10" />
-    </SettingItem>
+      <div
+        ref="contentRef"
+        class="
+          flex-1
+          rounded-tl-md
+          bg-[var(--el-bg-color)]
+          transition-[background-color]
+          overflow-hidden
+        "
+        :class="[show ? 'max-[800px]:pointer-events-none max-[800px]:brightness-[0.4]' : '']"
+      />
+    </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.setting-panel {
-  min-width: 820px;
-}
-
-.progress-base-radius {
-  :deep(.el-progress-bar__outer) {
-    border-radius: 6px;
-  }
-  :deep(.el-progress-bar__inner) {
-    border-radius: 6px;
-  }
-}
-</style>

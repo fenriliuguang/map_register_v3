@@ -3,7 +3,7 @@ import { GSDivider } from '.'
 
 const props = defineProps<{
   modelValue: string
-  tabs: { title: string; value: string }[]
+  tabs: { title: string, value: string }[]
 }>()
 
 const emits = defineEmits<{
@@ -43,6 +43,7 @@ const emits = defineEmits<{
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 @mixin clip-shape() {
@@ -135,6 +136,8 @@ const emits = defineEmits<{
 }
 
 .gs-tab-content {
+  width: 100%;
   flex: 1;
+  overflow: hidden;
 }
 </style>

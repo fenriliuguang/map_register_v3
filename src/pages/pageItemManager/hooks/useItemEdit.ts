@@ -1,38 +1,70 @@
-import { ItemDetailEditor } from '../components'
-import { useGlobalDialog, useItemList } from '@/hooks'
-import { useRowEdit } from '@/hooks/useTableManipulation'
+import type { ItemDetailForm } from '../components'
+import { pick } from 'lodash'
+import Api from '@/api/api'
+import { GSMessageService } from '@/components'
+import { useFetchHook } from '@/hooks'
+import { useSocketStore } from '@/stores'
 
 export interface ItemEditHookOptions {
-  onItemDetailEditSuccess?: () => void
+  initFormData?: () => API.ItemVo
 }
 
-export const useItemEdit = (options: ItemEditHookOptions) => {
-  const { onItemDetailEditSuccess } = options
+const sharedEditSame = ref<0 | 1>(0)
 
-  const { itemList } = useItemList()
+/** 只选择需要的字段 */
+const pickRequiredKeys = (item: API.ItemVo): API.ItemVo => pick(item, [
+  'id',
+  'name',
+  'areaId',
+  'defaultContent',
+  'iconId',
+  'typeIdList',
+  'iconStyleType',
+  'hiddenFlag',
+  'defaultRefreshTime',
+  'defaultCount',
+  'sortIndex',
+  'specialFlag',
+  'version',
+])
 
-  const editOptions = useRowEdit({
-    rowList: itemList,
-    saveHandler: async () => {
-      /** @TODO 保留行内编辑能力 */
+export const useItemEdit = (options: ItemEditHookOptions = {}) => {
+  const { initFormData } = options
+
+  const socketStore = useSocketStore()
+
+  const { refresh: submit, onSuccess, onError, ...rest } = useFetchHook({
+    onRequest: async (editSame: 0 | 1, item: API.ItemVo) => {
+      const { error, message } = await Api.item.updateItem({ editSame }, [pickRequiredKeys(item)])
+      if (error)
+        throw new Error(message)
+      socketStore.socketEvent.emit('ItemUpdated', item.id!)
     },
   })
 
-  const { DialogService } = useGlobalDialog()
+  const detailFormRef = ref<InstanceType<typeof ItemDetailForm> | null>(null)
+  const formData = ref<API.ItemVo>(initFormData?.() ?? {})
 
-  const openItemDetailEditorDialog = async (index: number) => {
-    await DialogService
-      .config({ title: '编辑物品详情', width: '700px', top: '20px' })
-      .props({
-        item: itemList.value[index],
-        type: 'editor',
-      })
-      .listeners({
-        success: () => onItemDetailEditSuccess?.(),
-      })
-      .open(ItemDetailEditor)
-      .afterClosed<boolean>()
+  const handleSubmit = async () => {
+    const isValid = await detailFormRef.value?.validate()
+    if (!isValid)
+      return
+    await submit(sharedEditSame.value, formData.value)
   }
 
-  return { ...editOptions, openItemDetailEditorDialog }
+  onSuccess(() => {
+    GSMessageService.info('编辑成功', {
+      type: 'success',
+      duration: 3000,
+    })
+  })
+
+  onError((err) => {
+    GSMessageService.info(`编辑失败: ${err.message}`, {
+      type: 'error',
+      duration: 50000,
+    })
+  })
+
+  return { detailFormRef, formData, handleSubmit, onSuccess, onError, ...rest }
 }

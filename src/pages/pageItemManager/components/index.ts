@@ -1,1 +1,7 @@
-export { default as ItemDetailEditor } from './ItemDetailEditor.vue'
+export { default as ItemCreator } from './ItemCreator.vue'
+export { default as ItemDeleteConfirm } from './ItemDeleteConfirm.vue'
+export { default as ItemDetailForm } from './ItemDetailForm.vue'
+export { default as ItemEditor } from './ItemEditor.vue'
+export { default as ItemFilter } from './ItemFilter.vue'
+export { default as ItemGridExplorer } from './ItemGridExplorer.vue'
+export { default as ItemTable } from './ItemTable.vue'

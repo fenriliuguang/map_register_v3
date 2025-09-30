@@ -1,828 +1,1418 @@
-
 declare namespace API {
-  type SysRoleLinkVo = {
-    /** 用户ID */
-    userId?: number;
-    /** 角色ID */
-    roleId?: number;
-  };
+  interface RBoolean {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: boolean
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RBoolean = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: boolean;
-    time?: string;
-  };
-
-  type TagTypeVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 分类ID */
-    id?: number;
-    /** 分类名 */
-    name?: string;
-    /** 父级分类ID（-1为根分类） */
-    parent?: number;
-    /** 是否为末端类型 */
-    isFinal?: boolean;
-  };
-
-  type RLong = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: number;
-    time?: string;
-  };
-
-  type RouteVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 路线ID */
-    id?: number;
-    /** 路线名称 */
-    name?: string;
-    /** 路线描述 */
-    content?: string;
-    /** 点位顺序数组 */
-    markerList?: string;
-    /** 显隐等级 */
-    hiddenFlag?: number;
-    /** 视频地址 */
-    video?: string;
-    /** 额外信息 */
-    extra?: string;
-    /** 创建人 */
-    creatorId?: number;
-    /** 创建人昵称 */
-    creatorNickname?: string;
-  };
-
-  type MarkerItemLinkVo = {
-    /** 物品id */
-    itemId?: number;
-    /** 点位物品数量 */
-    count?: number;
-    /** 图标标签 */
-    iconTag?: string;
-  };
-
-  type MarkerPunctuateVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 打点ID */
-    punctuateId?: number;
-    /** 原有点位id */
-    originalMarkerId?: number;
-    /** 点位名称 */
-    markerTitle?: string;
-    /** 点位坐标 */
-    position?: string;
-    /** 点位物品列表 */
-    itemList?: MarkerItemLinkVo[];
-    /** 点位说明 */
-    content?: string;
-    /** 点位图片 */
-    picture?: string;
-    /** 点位初始标记者 */
-    markerCreatorId?: number;
-    /** 点位图片上传者 */
-    pictureCreatorId?: number;
-    /** 点位视频 */
-    videoPath?: string;
-    /** 额外特殊字段 */
-    extra?: string;
-    /** 点位提交者id */
-    author?: number;
-    /** 状态;0:暂存 1:审核中 2:不通过 */
-    status?: number;
-    /** 审核备注 */
-    auditRemark?: string;
-    /** 操作类型;1: 新增 2: 修改 3: 删除 */
-    methodType?: number;
-    /** 刷新时间 */
-    refreshTime?: number;
-    /** 隐藏标志 */
-    hiddenFlag?: number;
-  };
-
-  type MarkerVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 点位ID */
-    id?: number;
-    /** 点位名称 */
-    markerTitle?: string;
-    /** 点位坐标 */
-    position?: string;
-    /** 点位物品列表 */
-    itemList?: MarkerItemLinkVo[];
-    /** 点位说明 */
-    content?: string;
-    /** 点位图片 */
-    picture?: string;
-    /** 点位初始标记者 */
-    markerCreatorId?: number;
-    /** 点位图片上传者 */
-    pictureCreatorId?: number;
-    /** 点位视频 */
-    videoPath?: string;
-    /** 额外特殊字段 */
-    extra?: string;
-    /** 刷新时间 */
-    refreshTime?: number;
-    /** 隐藏标志 */
-    hiddenFlag?: number;
-  };
-
-  type ItemTypeVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 类型ID */
-    typeId?: number;
-    /** 图标标签 */
-    iconTag?: string;
-    /** 类型名 */
-    name?: string;
-    /** 类型补充说明 */
-    content?: string;
-    /** 父级类型ID（无父级则为-1） */
-    parentId?: number;
-    /** 是否为末端类型 */
-    isFinal?: boolean;
-    /** 隐藏标志 */
-    hiddenFlag?: number;
-    /** 物品类型排序 */
-    sortIndex?: number;
-  };
-
-  type RListLong = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: number[];
-    time?: string;
-  };
-
-  type ItemVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 物品ID */
-    itemId?: number;
-    /** 物品名称 */
-    name?: string;
-    /** 物品类型ID列表 */
-    typeIdList?: number[];
-    /** 地区ID（须确保是末端地区） */
-    areaId?: number;
-    /** 默认描述模板;用于提交新物品点位时的描述模板 */
-    defaultContent?: string;
-    /** 图标标签 */
-    iconTag?: string;
-    /** 图标样式类型 */
-    iconStyleType?: number;
-    /** 隐藏标志 */
-    hiddenFlag?: number;
-    /** 刷新时间(单位:毫秒) */
-    defaultRefreshTime?: number;
-    /** 物品排序 */
-    sortIndex?: number;
-    /** 默认物品数量 */
-    defaultCount?: number;
-    /** 特殊物品标记，二进制表示<br>低位第一位：是否为显示物品 */
-    specialFlag?: number;
-    /** 查询条件下物品总数 */
-    count?: number;
-  };
-
-  type IconTypeVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 分类ID */
-    id?: number;
-    /** 分类名 */
-    name?: string;
-    /** 父级分类ID（-1为根分类） */
-    parent?: number;
-    /** 是否为末端类型 */
-    isFinal?: boolean;
-  };
-
-  type IconVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 图标ID */
-    iconId?: number;
-    /** 图标名称 */
-    name?: string;
-    /** 图标类型ID列表 */
-    typeIdList?: number[];
-    /** 图标url */
-    url?: string;
-    /** 创建者ID */
-    creator?: number;
-  };
-
-  type AreaVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 地区ID */
-    areaId?: number;
-    /** 地区名称 */
-    name?: string;
-    /** 地区代码 */
-    code?: string;
-    /** 地区说明 */
-    content?: string;
-    /** 图标标签 */
-    iconTag?: string;
-    /** 父级地区ID（无父级则为-1） */
-    parentId?: number;
-    /** 是否为末端地区 */
-    isFinal?: boolean;
-    /** 隐藏标志 */
-    hiddenFlag?: number;
-    /** 地区排序 */
-    sortIndex?: number;
-    /** 特殊物品标记 */
-    specialFlag?: number;
-  };
-
-  type SysUserUpdateDto = {
-    userId?: number;
-    nickname?: string;
-    qq?: string;
-    phone?: string;
-    logoUrl?: string;
-  };
-
-  type SysUserPasswordUpdateDto = {
-    userId?: number;
-    password?: string;
-    oldPassword?: string;
-  };
-
-  type SysUserRegisterVo = {
-    username?: string;
-    password?: string;
-  };
-
-  type SysUserSearchVo = {
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
+  interface SysUserSmallVo {
     /** 用户名 */
-    username?: string;
+    username?: string
     /** 昵称 */
-    nickname?: string;
-    sort?: string[];
-  };
-
-  type PageListVoSysUserVo = {
-    record?: SysUserVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoSysUserVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoSysUserVo;
-    time?: string;
-  };
-
-  type SysRoleVo = {
-    /** 角色ID */
-    id?: number;
-    /** 角色名 */
-    name?: string;
-    /** 角色代码（英文大写） */
-    code?: string;
-    /** 角色层级（越大级别越高） */
-    sort?: number;
-  };
-
-  type SysUserVo = {
-    /** 用户ID */
-    id?: number;
-    /** 用户名 */
-    username?: string;
-    /** 昵称 */
-    nickname?: string;
+    nickname?: string
     /** QQ */
-    qq?: string;
+    qq?: string
     /** 手机号 */
-    phone?: string;
+    phone?: string
     /** 头像链接 */
-    logoUrl?: string;
-    /** 角色列表 */
-    roleList?: SysRoleVo[];
-  };
+    logo?: string
+    /** 备注 */
+    remark?: string
+  }
 
-  type PageAndTypeListVo = {
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-    /** 父级类型ID列表 */
-    typeIdList?: number[];
-  };
-
-  type PageListVoTagTypeVo = {
-    record?: TagTypeVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoTagTypeVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoTagTypeVo;
-    time?: string;
-  };
-
-  type TagVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 标签名 */
-    tag?: string;
-    /** 标签类型ID列表 */
-    typeIdList?: number[];
-    /** 图标ID */
-    iconId?: number;
-    /** 图标url */
-    url?: string;
-  };
-
-  type RTagVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: TagVo;
-    time?: string;
-  };
-
-  type TagSearchVo = {
-    /** 标签名列表 */
-    tagList?: string[];
-    /**  图标标签分类列表 */
-    typeIdList?: number[];
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-  };
-
-  type PageListVoTagVo = {
-    record?: TagVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoTagVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoTagVo;
-    time?: string;
-  };
-
-  type ScoreParamsVo = {
-    /** 统计范围 */
-    scope?: string;
-    /** 开始时间 */
-    startTime?: string;
-    /** 结束时间 */
-    endTime?: string;
-    /** 统计颗粒度 */
-    span?: 'DAY';
-    generatorId?: number;
-  };
-
-  type RObject = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: Record<string, any>;
-    time?: string;
-  };
-
-  type RouteSearchVo = {
-    /** 路线名称模糊搜索字段 */
-    namePart?: string;
-    /** 创建人昵称模糊搜索字段，此字段不能与创建人id字段共存 */
-    creatorNicknamePart?: string;
-    /** 创建人id，此字段不能与昵称模糊搜索字段共存 */
-    creatorId?: string;
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-  };
-
-  type PageListVoRouteVo = {
-    record?: RouteVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoRouteVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoRouteVo;
-    time?: string;
-  };
-
-  type PageSearchVo = {
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-  };
-
-  type RListRouteVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: RouteVo[];
-    time?: string;
-  };
-
-  type PageListVoMarkerPunctuateVo = {
-    record?: MarkerPunctuateVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoMarkerPunctuateVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoMarkerPunctuateVo;
-    time?: string;
-  };
-
-  type PunctuateSearchVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 地区ID列表 */
-    areaIdList?: number[];
-    /** 物品ID列表 */
-    itemIdList?: number[];
-    /** 类型ID列表 */
-    typeIdList?: number[];
-    /** 提交者ID列表 */
-    authorList?: number[];
-  };
-
-  type RListMarkerPunctuateVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: MarkerPunctuateVo[];
-    time?: string;
-  };
-
-  type PageListVoMarkerVo = {
-    record?: MarkerVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoMarkerVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoMarkerVo;
-    time?: string;
-  };
-
-  type MarkerSearchVo = {
-    /** 地区ID列表 */
-    areaIdList?: number[];
-    /** 物品ID列表 */
-    itemIdList?: number[];
-    /** 类型ID列表 */
-    typeIdList?: number[];
-    /** 获取测试点位，默认为false不获取，为true时只获取测试点位 */
-    getBeta?: boolean;
-    /** 数据等级(hidden_flag范围) */
-    hiddenFlagList?: number[];
-  };
-
-  type RListMarkerVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: MarkerVo[];
-    time?: string;
-  };
-
-  type RListItemTypeVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ItemTypeVo[];
-    time?: string;
-  };
-
-  type PageListVoItemTypeVo = {
-    record?: ItemTypeVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoItemTypeVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoItemTypeVo;
-    time?: string;
-  };
-
-  type PageListVoItemVo = {
-    record?: ItemVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoItemVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoItemVo;
-    time?: string;
-  };
-
-  type ItemSearchVo = {
-    /** 末端物品类型ID列表 */
-    typeIdList?: number[];
-    /** 末端地区ID列表 */
-    areaIdList?: number[];
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-  };
-
-  type RListItemVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ItemVo[];
-    time?: string;
-  };
-
-  type PageListVoIconTypeVo = {
-    record?: IconTypeVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoIconTypeVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoIconTypeVo;
-    time?: string;
-  };
-
-  type RIconVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: IconVo;
-    time?: string;
-  };
-
-  type IconSearchVo = {
-    /** 乐观锁：修改次数 */
-    version?: number;
-    /** 图标ID列表 */
-    iconIdList?: number[];
-    /** 创建者ID */
-    creator?: number;
-    /** 图标分类列表 */
-    typeIdList?: number[];
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-  };
-
-  type PageListVoIconVo = {
-    record?: IconVo[];
-    total?: number;
-    size?: number;
-  };
-
-  type RPageListVoIconVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoIconVo;
-    time?: string;
-  };
-
-  type HistorySearchVo = {
-    /** 当前页，从0开始 */
-    current?: number;
-    /** 每页大小，默认为10 */
-    size?: number;
-    /** 记录类型 */
-    type?: number;
-    /** 类型ID(配合记录类型使用) */
-    id?: number[];
-  };
-
-  type HistoryVo = {
-    id?: number;
-    /** 内容 */
-    content?: Record<string, any>;
-    /** md5 */
-    md5?: string;
-    /** 记录类型 */
-    type?: number;
-    /** ipv4 */
-    ipv4?: string;
+  interface RouteVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
     /** 创建人 */
-    creatorId?: number;
+    creatorId?: number
     /** 创建时间 */
-    createTime?: string;
-    tid?: number;
-  };
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 路线名称 */
+    name?: string
+    /** 路线描述 */
+    content?: string
+    /** 点位顺序数组 */
+    markerList?: unknown[]
+    /** 显隐等级 */
+    hiddenFlag?: number
+    /** 视频地址 */
+    video?: string
+    /** 额外信息 */
+    extra?: Record<string, unknown>
+    /** 创建人昵称 */
+    creatorNickname?: string
+  }
 
-  type PageListVoHistoryVo = {
-    record?: HistoryVo[];
-    total?: number;
-    size?: number;
-  };
+  interface RLong {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: number
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RPageListVoHistoryVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: PageListVoHistoryVo;
-    time?: string;
-  };
+  interface ResourceUploadVo {
+    /** 文件路径 */
+    filePath?: string
+    /** 文件地址 */
+    fileUrl?: string
+  }
 
-  type RAreaVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: AreaVo;
-    time?: string;
-  };
+  interface RResourceUploadVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: ResourceUploadVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type AreaSearchVo = {
+  interface MarkerPunctuateVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 点位提交ID */
+    punctuateId?: number
+    /** 原有点位ID */
+    originalMarkerId?: number
+    /** 点位名称 */
+    markerTitle?: string
+    /** 点位物品列表 */
+    itemList?: string
+    /** 点位坐标 */
+    position?: string
+    /** 点位说明 */
+    content?: string
+    /** 额外特殊字段 */
+    extra?: Record<string, unknown>
+    /** 点位图片 */
+    picture?: string
+    /** 点位初始标记者 */
+    markerCreatorId?: number
+    /** 点位图片上传者 */
+    pictureCreatorId?: number
+    /** 点位视频 */
+    videoPath?: string
+    /** 隐藏标志 */
+    hiddenFlag?: number
+    /** 点位提交者ID */
+    author?: number
+    /** 状态;0:暂存 1:审核中 2:不通过 */
+    status?: number
+    /** 审核备注 */
+    auditRemark?: string
+    /** 操作类型;1: 新增 2: 修改 3: 删除 */
+    methodType?: number
+    /** 点位刷新时间 */
+    refreshTime?: number
+  }
+
+  interface NoticeVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 频道 */
+    channel?: string[]
+    /** 标题 */
+    title?: string
+    /** 内容 */
+    content?: string
+    /** 排序 */
+    sortIndex?: number
+    /** 有效期开始时间 */
+    validTimeStart?: string
+    /** 有效期结束时间 */
+    validTimeEnd?: string
+  }
+
+  interface MarkerItemLinkVo {
+    /** 物品ID */
+    itemId?: number
+    /** 物品于该点位数量 */
+    count?: number
+    /** 图标ID */
+    iconId?: number
+  }
+
+  interface MarkerVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 点位签戳（用于兼容旧点位ID） */
+    markerStamp?: string
+    /** 点位名称 */
+    markerTitle?: string
+    /** 点位坐标 */
+    position?: string
+    /** 点位物品列表 */
+    itemList?: MarkerItemLinkVo[]
+    /** 点位说明 */
+    content?: string
+    /** 点位图片 */
+    picture?: string
+    /** 点位初始标记者 */
+    markerCreatorId?: number
+    /** 点位图片上传者 */
+    pictureCreatorId?: number
+    /** 点位视频 */
+    videoPath?: string
+    /** 点位刷新时间;单位:毫秒 */
+    refreshTime?: number
+    /** 隐藏标志 */
+    hiddenFlag?: number
+    /** 额外特殊字段 */
+    extra?: Record<string, unknown>
+    /** 点位关联组ID */
+    linkageId?: string
+  }
+
+  interface ItemTypeVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 图标ID */
+    iconId?: number
+    /** 类型名 */
+    name?: string
+    /** 类型补充说明 */
+    content?: string
+    /** 父级类型ID（无父级则为-1） */
+    parentId?: number
+    /** 是否为末端类型 */
+    isFinal?: boolean
+    /** 隐藏标记 */
+    hiddenFlag?: number
+    /** 排序 */
+    sortIndex?: number
+  }
+
+  interface RListLong {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: number[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface ItemVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 物品名称 */
+    name?: string
+    /** 地区ID（须确保是末端地区） */
+    areaId?: number
+    /** 默认刷新时间;单位:毫秒 */
+    defaultRefreshTime?: number
+    /** 默认描述模板;用于提交新物品点位时的描述模板 */
+    defaultContent?: string
+    /** 默认数量 */
+    defaultCount?: number
+    /** 图标ID */
+    iconId?: number
+    /** 图标样式类型 */
+    iconStyleType?: number
+    /** 隐藏标志 */
+    hiddenFlag?: number
+    /** 物品排序 */
+    sortIndex?: number
+    /** 特殊物品标记;二进制表示；低位第一位：前台是否显示 */
+    specialFlag?: number
+    /** 物品类型ID列表 */
+    typeIdList?: number[]
+    /** 查询条件下物品总数 */
+    count?: number
+    /** 物品总数区分 */
+    countSplit?: Record<string, number>
+  }
+
+  interface IconTypeVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 分类名 */
+    name?: string
+    /** 父级分类ID（-1为根分类） */
+    parentId?: number
+    /** 是否为末端类型 */
+    isFinal?: boolean
+  }
+
+  interface IconVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 图标标签 */
+    tag?: string
+    /** 图标类型ID列表 */
+    typeIdList?: number[]
+    /** 图标url */
+    url?: string
+    /** 图标描述 */
+    description?: string
+  }
+
+  interface AreaVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 地区名称 */
+    name?: string
+    /** 地区代码 */
+    code?: string
+    /** 地区说明 */
+    content?: string
+    /** 图标ID */
+    iconId?: number
+    /** 父级地区ID（无父级则为-1） */
+    parentId?: number
+    /** 是否为末端地区 */
+    isFinal?: boolean
+    /** 权限屏蔽标记 */
+    hiddenFlag?: number
+    /** 额外标记;低位第一位：前台是否显示 */
+    specialFlag?: number
+    /** 排序 */
+    sortIndex?: number
+  }
+
+  interface SysUserUpdateVo {
+    userId?: number
+    nickname?: string
+    qq?: string
+    phone?: string
+    logo?: string
+    roleId?: number
+    remark?: string
+    accessPolicy?: string[]
+  }
+
+  interface SysUserPasswordUpdateVo {
+    userId?: number
+    password?: string
+    oldPassword?: string
+  }
+
+  interface SysUserRegisterVo {
+    username?: string
+    password?: string
+  }
+
+  interface SysUserSearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 用户名 */
+    username?: string
+    /** 昵称 */
+    nickname?: string
+    /** 角色ID */
+    roleIds?: string[]
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface PageListVoSysUserVo {
+    record?: SysUserVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoSysUserVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoSysUserVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysUserVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 用户名 */
+    username?: string
+    /** 昵称 */
+    nickname?: string
+    /** QQ */
+    qq?: string
+    /** 手机号 */
+    phone?: string
+    /** 头像链接 */
+    logo?: string
+    /** 角色ID */
+    roleId?: number
+    /** 备注 */
+    remark?: string
+    /** access_policy */
+    accessPolicy?: string[]
+  }
+
+  interface SysUserInvitationVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 邀请码 */
+    code?: string
+    /** 用户名 */
+    username?: string
+    /** 角色ID */
+    roleId?: number
+    /** 备注 */
+    remark?: string
+    /** 权限策略 */
+    accessPolicy?: string[]
+  }
+
+  interface RSysUserInvitationSmallVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysUserInvitationSmallVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysUserInvitationSmallVo {
+    /** 邀请码 */
+    code?: string
+    /** 用户名 */
+    username?: string
+  }
+
+  interface SysUserInvitationSearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 邀请码 */
+    code?: string
+    /** 用户名 */
+    username?: string
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface PageListVoSysUserInvitationVo {
+    record?: SysUserInvitationVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoSysUserInvitationVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoSysUserInvitationVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysUserInvitationConsumeVo {
+    /** 邀请码 */
+    code?: string
+    /** 用户名 */
+    username?: string
+    /** 密码 */
+    password?: string
+    /** 昵称 */
+    nickname?: string
+  }
+
+  interface RSysUserInvitationConsumeResultVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysUserInvitationConsumeResultVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysUserInvitationConsumeResultVo {
+    /** 用户ID */
+    userId?: number
+    /** 条件结果 */
+    result?: 'EXISTING' | 'SUCCESS'
+  }
+
+  interface Region {
+    /** 国家 */
+    country?: string
+    /** 地区 */
+    region?: string
+    /** 省/州 */
+    province?: string
+    /** 城市 */
+    city?: string
+    /** 网络运营商 */
+    isp?: string
+    fullRegion?: string
+    /** 是否是未知地区 */
+    isUnknown?: boolean
+  }
+
+  interface SysUserDeviceVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 用户ID */
+    userId?: number
+    /** 设备编码 */
+    deviceId?: string
+    /** IPv4 */
+    ipv4?: string
+    ipRegion?: Region
+    /** 设备状态 */
+    status?: 0 | 1 | 2
+    /** 上次登录时间 */
+    lastLoginTime?: string
+  }
+
+  interface SysUserDeviceSearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 用户ID */
+    userId?: number
+    /** IPv4 */
+    ipv4?: string
+    /** 设备ID */
+    deviceId?: string
+    /** 设备状态 */
+    status?: number
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface PageListVoSysUserDeviceVo {
+    record?: SysUserDeviceVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoSysUserDeviceVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoSysUserDeviceVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysActionLogSearchVo {
+    /** 当前页，从0开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 用户ID */
+    userId?: number
+    /** IPv4 */
+    ipv4?: string
+    /** 设备ID */
+    deviceId?: string
+    /** 操作名 */
+    action?: string
+    /** 是否是错误 */
+    isError?: boolean
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface PageListVoSysActionLogVo {
+    record?: SysActionLogVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoSysActionLogVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoSysActionLogVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysActionLogVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 用户ID */
+    userId?: number
+    /** IPv4 */
+    ipv4?: string
+    /** 设备编码 */
+    deviceId?: string
+    /** 操作名 */
+    action?: string
+    /** 是否是错误 */
+    isError?: boolean
+    /** 附加信息 */
+    extraData?: Record<string, unknown>
+  }
+
+  interface ScoreParamsVo {
+    /** 统计范围 */
+    scope?: string
+    /** 开始时间 */
+    startTime?: string
+    /** 结束时间 */
+    endTime?: string
+    /** 统计颗粒度 */
+    span?: 'DAY'
+    generatorId?: number
+  }
+
+  interface RObject {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: unknown
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface RouteSearchVo {
+    /** 路线名称模糊搜索字段 */
+    namePart?: string
+    /** 创建人昵称模糊搜索字段，此字段不能与创建人id字段共存 */
+    creatorNicknamePart?: string
+    /** 创建人id，此字段不能与昵称模糊搜索字段共存 */
+    creatorId?: string
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+  }
+
+  interface PageListVoRouteVo {
+    record?: RouteVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoRouteVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoRouteVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PageSearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+  }
+
+  interface RListRouteVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: RouteVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PageListVoMarkerPunctuateVo {
+    record?: MarkerPunctuateVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoMarkerPunctuateVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoMarkerPunctuateVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PunctuateSearchVo {
+    /** 乐观锁：修改次数 */
+    version?: number
+    /** 地区ID列表 */
+    areaIdList?: number[]
+    /** 物品ID列表 */
+    itemIdList?: number[]
+    /** 类型ID列表 */
+    typeIdList?: number[]
+    /** 提交者ID列表 */
+    authorList?: number[]
+  }
+
+  interface RListMarkerPunctuateVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: MarkerPunctuateVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface NoticeSearchVo {
+    /** 频道 */
+    channels?: string[]
+    /** 标题 */
+    title?: string
+    /** 获取有效数据 */
+    getValid?: boolean
+    /** 数据转换器 */
+    transformer?: string
+    /** 排序条件 */
+    sort?: string[]
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+  }
+
+  interface PageListVoNoticeVo {
+    record?: NoticeVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoNoticeVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoNoticeVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface MarkerLinkageVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 组ID */
+    groupId?: string
+    /** 起始点点位ID;会根据是否反向与 to_id 交换 */
+    fromId?: number
+    /** 终止点点位ID;会根据是否反向与 from_id 交换 */
+    toId?: number
+    /** 关联操作类型 */
+    linkAction?: string
+    /** 是否反向 */
+    linkReverse?: boolean
+    /** 路线 */
+    path?: PathEdgeVo[]
+    /** 额外数据 */
+    extra?: Record<string, unknown>
+  }
+
+  interface PathEdgeVo {
+    /** 起始点位ID 输出时会转换为 X1 & Y1 */
+    id1?: number
+    /** 起始位置X坐标 */
+    x1?: number
+    /** 起始位置Y坐标 */
+    y1?: number
+    /** 起始曲线句柄X坐标 起始位置的三次贝塞尔曲线句柄X坐标 */
+    handleX1?: number
+    /** 起始曲线句柄Y坐标 起始位置的三次贝塞尔曲线句柄Y坐标 */
+    handleY1?: number
+    /** 起点箭头形状 */
+    arrowType1?: 'NONE' | 'ARROW' | 'CIRCLE' | 'DOT'
+    /** 终止点位ID 输出时会转换为 X2 & Y2 */
+    id2?: number
+    /** 终止位置X坐标 */
+    x2?: number
+    /** 终止位置Y坐标 */
+    y2?: number
+    /** 终止曲线句柄X坐标 终止位置的三次贝塞尔曲线句柄X坐标 */
+    handleX2?: number
+    /** 终止曲线句柄Y坐标 终止位置的三次贝塞尔曲线句柄Y坐标 */
+    handleY2?: number
+    /** 终点箭头形状 */
+    arrowType2?: 'NONE' | 'ARROW' | 'CIRCLE' | 'DOT'
+    /** 线条样式 */
+    lineType?: 'SOLID' | 'DASHED' | 'DOTTED'
+  }
+
+  interface RString {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: string
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface MarkerLinkageSearchVo {
+    groupIds?: string[]
+  }
+
+  interface RMapStringListMarkerLinkageVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: Record<string, MarkerLinkageVo[]>
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface GraphVo {
+    /** 点位关联关系 */
+    relations?: Record<string, string[]>
+    /** 点位关联关系引用映射 */
+    relRefs?: Record<string, RelationVo>
+    /** 路线组引用映射 */
+    pathRefs?: Record<string, PathEdgeVo[]>
+  }
+
+  interface LinkRefVo {
+    /** 点位ID */
+    markerId?: number
+    /** 起始点位ID */
+    srcId?: number
+    /** 结束点位ID */
+    tarId?: number
+    /** 路线组引用ID */
+    pathRefId?: number
+  }
+
+  interface RMapStringGraphVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: Record<string, GraphVo>
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface RelationVo {
+    /** 关联组类型 */
+    type?: string
+    /** 触发关联数据 */
+    triggers?: LinkRefVo[]
+    /** 目标关联数据 */
+    targets?: LinkRefVo[]
+    /** 分组关联数据 */
+    group?: LinkRefVo[]
+  }
+
+  interface TweakConfigMetaVo {
+    /** 数据值 */
+    value?: unknown
+    /** 检查文本 */
+    test?: string
+    /** 替换为 */
+    replace?: string
+    /** 键值对映射 */
+    map?: Record<string, unknown>
+    /** 物品关联 */
+    itemList?: MarkerItemLinkVo[]
+  }
+
+  interface TweakConfigVo {
+    /** 需调整的点位属性 */
+    prop?: string
+    /** 调整方法类型 */
+    type?: string
+    meta?: TweakConfigMetaVo
+  }
+
+  interface TweakVo {
+    /** 点位ID */
+    markerIds?: number[]
+    /** 点位数据调整配置 */
+    tweaks?: TweakConfigVo[]
+  }
+
+  interface RListMarkerVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: MarkerVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PageListVoMarkerVo {
+    record?: MarkerVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoMarkerVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoMarkerVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface MarkerSearchVo {
+    /** 地区ID列表 */
+    areaIdList?: number[]
+    /** 物品ID列表 */
+    itemIdList?: number[]
+    /** 类型ID列表 */
+    typeIdList?: number[]
+  }
+
+  interface RListItemTypeVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: ItemTypeVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PageAndTypeSearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 父级类型ID列表 */
+    typeIdList?: number[]
+  }
+
+  interface PageListVoItemTypeVo {
+    record?: ItemTypeVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoItemTypeVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoItemTypeVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface ItemAreaPublicVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 物品ID */
+    itemId?: number
+    /** 物品名称 */
+    name?: string
+    /** 地区ID（须确保是末端地区） */
+    areaId?: number
+    /** 默认刷新时间;单位:毫秒 */
+    defaultRefreshTime?: number
+    /** 默认描述模板;用于提交新物品点位时的描述模板 */
+    defaultContent?: string
+    /** 默认数量 */
+    defaultCount?: number
+    /** 图标ID */
+    iconId?: number
+    /** 图标样式类型 */
+    iconStyleType?: number
+    /** 隐藏标志 */
+    hiddenFlag?: number
+    /** 物品排序 */
+    sortIndex?: number
+    /** 特殊物品标记;二进制表示；低位第一位：前台是否显示 */
+    specialFlag?: number
+    /** 物品类型ID列表 */
+    typeIdList?: number[]
+  }
+
+  interface PageListVoItemAreaPublicVo {
+    record?: ItemAreaPublicVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoItemAreaPublicVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoItemAreaPublicVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface ItemSearchVo {
+    /** 末端物品类型ID列表 */
+    typeIdList?: number[]
+    /** 末端地区ID列表 */
+    areaIdList?: number[]
+    /** 物品名 */
+    name?: string
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface PageListVoItemVo {
+    record?: ItemVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoItemVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoItemVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface RListItemVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: ItemVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface PageListVoIconTypeVo {
+    record?: IconTypeVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoIconTypeVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoIconTypeVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface RIconVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: IconVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface IconSearchVo {
+    /** 乐观锁：修改次数 */
+    version?: number
+    /** 图标ID列表 */
+    iconIdList?: number[]
+    /** 创建者ID */
+    creator?: number
+    /** 图标分类列表 */
+    typeIdList?: number[]
+    /** 图标标签 */
+    tag?: string
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+  }
+
+  interface PageListVoIconVo {
+    record?: IconVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoIconVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoIconVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface HistorySearchVo {
+    /** 当前页，从1开始 */
+    current?: number
+    /** 每页大小，默认为10 */
+    size?: number
+    /** 记录类型 */
+    type?: number
+    /** 类型ID(配合记录类型使用) */
+    id?: number[]
+    /** 操作数据类型 */
+    editType?: '0' | '1' | '2' | '3' | '10'
+    /** 创建人ID */
+    creatorId?: number
+    /** 创建时间开始时间 */
+    createTimeStart?: string
+    /** 创建时间结束时间 */
+    createTimeEnd?: string
+    /** 排序条件 */
+    sort?: string[]
+  }
+
+  interface HistoryVo {
+    /** 乐观锁 */
+    version?: number
+    /** ID */
+    id?: number
+    /** 创建人 */
+    creatorId?: number
+    /** 创建时间 */
+    createTime?: string
+    /** 更新人 */
+    updaterId?: number
+    /** 更新时间 */
+    updateTime?: string
+    /** 内容 */
+    content?: string
+    /** MD5 */
+    md5?: string
+    /** 操作数据类型;1地区; 2图标; 3物品; 4点位; */
+    type?: number
+    /** IPv4 */
+    ipv4?: string
+    /** 修改类型 */
+    editType?: 0 | 1 | 2 | 3 | 10
+    tid?: number
+  }
+
+  interface PageListVoHistoryVo {
+    record?: HistoryVo[]
+    total?: number
+    size?: number
+  }
+
+  interface RPageListVoHistoryVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: PageListVoHistoryVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface RAreaVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: AreaVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface AreaSearchVo {
     /** 父级ID */
-    parentId?: number;
+    parentId?: number
     /** 是否遍历子地区 */
-    isTraverse?: boolean;
+    isTraverse?: boolean
     /** 数据等级(hidden_flag范围) */
-    hiddenFlagList?: number[];
-  };
+    hiddenFlagList?: number[]
+  }
 
-  type RListAreaVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: AreaVo[];
-    time?: string;
-  };
+  interface RListAreaVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: AreaVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RSysUserVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: SysUserVo;
-    time?: string;
-  };
+  interface RSysUserVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysUserVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RListSysRoleVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: SysRoleVo[];
-    time?: string;
-  };
+  interface RListSysRoleVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysRoleVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type ArchiveVo = {
-    /** 存档ID */
-    id?: number;
-    /** 存档名称 */
-    name?: string;
-    /** 槽位顺序 */
-    slotIndex?: number;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
+  interface SysRoleVo {
+    /** 角色ID */
+    id?: number
+    /** 角色名 */
+    name?: string
+    /** 角色代码（英文大写） */
+    code?: string
+    /** 角色层级（越大级别越高） */
+    sort?: number
+  }
+
+  interface RSysArchiveVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysArchiveVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
+
+  interface SysArchiveVo {
+    /** 存档时间 */
+    time?: string
     /** 存档 */
-    archive?: string;
+    archive?: string
     /** 存档历史下标 */
-    historyIndex?: number;
-  };
+    historyIndex?: number
+  }
 
-  type RArchiveVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ArchiveVo;
-    time?: string;
-  };
+  interface RSysArchiveSlotVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysArchiveSlotVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type ArchiveHistoryVo = {
+  interface SysArchiveSlotVo {
+    version?: number
     /** 存档ID */
-    id?: number;
+    id?: number
     /** 存档名称 */
-    name?: string;
+    name?: string
     /** 槽位顺序 */
-    slotIndex?: number;
+    slotIndex?: number
     /** 创建时间 */
-    createTime?: string;
+    createTime?: string
     /** 更新时间 */
-    updateTime?: string;
+    updateTime?: string
     /** 存档列表 */
-    archive?: string[];
-    /** 存档历史下标 */
-    historyIndex?: number;
-  };
+    archive?: SysArchiveVo[]
+  }
 
-  type RArchiveHistoryVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ArchiveHistoryVo;
-    time?: string;
-  };
+  interface RListSysArchiveSlotVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: SysArchiveSlotVo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RListArchiveVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ArchiveVo[];
-    time?: string;
-  };
+  interface BinaryMD5Vo {
+    /** md5 */
+    md5?: string
+    /** 时间戳 */
+    time?: number
+  }
 
-  type RListArchiveHistoryVo = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: ArchiveHistoryVo[];
-    time?: string;
-  };
+  interface RBinaryMD5Vo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: BinaryMD5Vo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RString = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: string;
-    time?: string;
-  };
+  interface RListBinaryMD5Vo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: BinaryMD5Vo[]
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 
-  type RListString = {
-    error?: boolean;
-    errorStatus?: number;
-    errorData?: Record<string, any>;
-    message?: string;
-    data?: string[];
-    time?: string;
-  };
+  interface LinkDeleteQueryVo {
+    ids?: number[]
+    groupIds?: string[]
+  }
+
+  interface LinkDeleteVo {
+    groups?: string[]
+    markers?: number[]
+  }
+
+  interface RLinkDeleteVo {
+    error?: boolean
+    errorStatus?: number
+    errorData?: unknown
+    message?: string
+    data?: LinkDeleteVo
+    users?: Record<string, SysUserSmallVo>
+    time?: string
+  }
 }

@@ -1,40 +1,58 @@
-import { ItemDetailEditor } from '../components'
-import { useGlobalDialog } from '@/hooks'
+import type { ItemDetailForm } from '../components'
+import Api from '@/api/api'
+import { GSMessageService } from '@/components'
+import { useFetchHook } from '@/hooks'
+import { HiddenFlagEnum, IconStyle } from '@/shared'
+import { useSocketStore } from '@/stores'
 
-interface ItemCreateHookOption {
-  defaultItemData?: () => API.ItemVo
-  onCreateItemSuccess?: () => void
+export interface ItemCreateHookOptions {
+  /** 用于控制事件监听器只会被附加一次的 flag */
+  isRoot?: boolean
 }
 
-export interface ItemCreatorDialogOptions {
-  listeners: Record<string, (event: string) => void>
-}
+export const useItemCreate = () => {
+  const socketStore = useSocketStore()
 
-export const useItemCreate = (options: ItemCreateHookOption) => {
-  const { defaultItemData = () => ({} as API.ItemVo), onCreateItemSuccess } = options
-
-  /** @TODO 暂定默认iconStyle默认样式 */
-  const item = computed(() => {
-    const i = defaultItemData()
-    i.iconStyleType = 0
-    return i
+  const { refresh: submit, onSuccess, onError, ...rest } = useFetchHook({
+    onRequest: async (item: API.ItemVo) => {
+      const { error, message } = await Api.item.createItem(item)
+      if (error)
+        throw new Error(message)
+      socketStore.socketEvent.emit('ItemAdded', item.id!)
+    },
   })
 
-  const { DialogService } = useGlobalDialog()
+  const initFormData = (): API.ItemVo => ({
+    defaultCount: 1,
+    defaultRefreshTime: 0,
+    typeIdList: [],
+    hiddenFlag: HiddenFlagEnum.SHOW,
+    iconId: undefined,
+    iconStyleType: IconStyle.DEFAULT,
+    sortIndex: 0,
+  })
 
-  const openItemCreatorDialog = async () => {
-    await DialogService
-      .config({ title: '新建物品', width: '700px', top: '20px' })
-      .props({
-        item: item.value,
-        type: 'creator',
-      })
-      .listeners({
-        success: () => onCreateItemSuccess?.(),
-      })
-      .open(ItemDetailEditor)
-      .afterClosed<boolean>()
+  const detailFormRef = ref<InstanceType<typeof ItemDetailForm> | null>(null)
+  const formData = ref<API.ItemVo>(initFormData())
+
+  const handleSubmit = async () => {
+    const isValid = await detailFormRef.value?.validate()
+    if (!isValid)
+      return
+    await submit(formData.value)
   }
 
-  return { openItemCreatorDialog }
+  onSuccess(() => {
+    GSMessageService.info('新增成功，数据同步可能需要几分钟时间', {
+      type: 'success',
+      duration: 5000,
+    })
+  })
+
+  onError(err => GSMessageService.info(`新增失败：${err.message}`, {
+    type: 'error',
+    duration: 5000,
+  }))
+
+  return { formData, detailFormRef, initFormData, handleSubmit, onSuccess, ...rest }
 }

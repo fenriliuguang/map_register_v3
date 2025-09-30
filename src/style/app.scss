@@ -3,34 +3,13 @@
 @import 'tailwindcss/utilities';
 @import './element-plus/index.scss';
 @import './transition/index.scss';
-@import './fonts/font.scss';
+@import './theme/index.scss';
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+:root {
+  // 禁用移动端点击反馈背景色
+  -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  overflow: auto;
-}
-
-@supports (width: 100dvw) and (width: 100dvh) {
-  .fullscreen {
-    width: 100dvw;
-    height: 100dvh;;
-  }
-}
-
-@supports not ((width: 100dvw) or (width: 100dvh)) {
-  .fullscreen {
-    width: 100vw;
-    height: 100vh;
-  }
-}
-
-// TODO 暂时没有计划做响应式和移动端适配，尺寸下限先定死
-#app {
-  min-width: 1280px;
-  min-height: 720px;
+html {
+  view-transition-name: schema-change;
 }

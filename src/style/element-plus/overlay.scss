@@ -1,0 +1,12 @@
+.el-overlay {
+  &.el-overlay {
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+    transition-property: background-color;
+    overflow: hidden;
+  }
+
+  .el-overlay-dialog {
+    position: absolute;
+  }
+}

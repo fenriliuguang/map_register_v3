@@ -1,10 +1,17 @@
+# OS file
 .DS_Store
 .thumbs.db
+Microsoft
+
+# deps
 node_modules
 
 # build
 dist
 build
+
+# visualizer files
+stats.html
 
 # Log files
 npm-debug.log*
@@ -13,6 +20,7 @@ yarn-error.log*
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+debug.log
 
 # Editor directories and files
 .idea
@@ -24,5 +32,15 @@ yarn.lock
 # 忽略本地环境变量
 .env.*local
 
+# mock
+.mock
+
 # 自动更新
 auto-imports.d.ts
+
+# 文件补丁
+/patch-edit
+*.timestamp-*.*
+
+# VSCode
+.vscode/**/*.code-snippets

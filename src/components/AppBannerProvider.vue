@@ -1,19 +1,37 @@
 <script lang="ts" setup>
-import { content, visible } from '@/hooks/useBanner/bannerContext'
+import { useBanner } from '@/hooks'
+import { Close } from '@element-plus/icons-vue'
+import { ElIcon } from 'element-plus'
+
+const { content, visible, close } = useBanner()
 </script>
 
 <template>
   <Transition name="draw-y" mode="out-in" appear>
     <div
       v-show="visible"
-      class="genshin-text absolute w-full top-0 text-md p-1 px-2 text-center"
-      :style="{
-        background: '#E2DED5',
-        color: '#4A4F50',
-        zIndex: 3000,
-      }"
+      class="
+        fixed w-full h-8 top-0 overflow-hidden
+        flex items-center
+        bg-[#E2DED5]
+        font-[HYWenHei-85W] text-[#4A4F50] text-md text-center
+        leading-8
+        z-[3000]
+      "
     >
-      {{ content }}
+      <div class="flex-1 overflow-hidden">
+        <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+          {{ content }}
+        </div>
+      </div>
+
+      <ElIcon
+        class="p-1 hover:bg-[#F4E3C0] active:bg-[#FFFFFF]"
+        :size="32"
+        @click="close"
+      >
+        <Close />
+      </ElIcon>
     </div>
   </Transition>
 </template>

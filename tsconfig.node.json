@@ -1,11 +1,20 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": [
+    "vite.config.ts",
+    "./plugins/**/*",
+    "./.vite/**/*",
+    "types/env.d.ts"
+  ],
   "compilerOptions": {
+    "incremental": true,
     "composite": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "types": ["vite/client", "node"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
     "baseUrl": ".",
-    "rootDir": "."
-  },
-  "include": ["package.json", "./plugins/**/*", "./.vite/**/*", "vite.config.ts", "env.d.ts"]
+    "rootDir": ".",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
+  }
 }

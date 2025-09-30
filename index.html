@@ -1,13 +1,117 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="overflow-hidden">
+<html lang="zh-CN" data-app-version="%APP_VERSION%">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>空荧酒馆后厨</title>
-  <script type="module" src="./src/main.ts"></script>
+  <meta name="robots" content="none">
+  <title>%VITE_TITLE%</title>
+  <style>
+    html {
+      width: 100dvw;
+      height: 100dvh;
+      overflow: hidden;
+      cursor: url('/icons/GensinMouse.svg') 0 0, auto;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    body, #app {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    @keyframes app-init {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    #first-loading {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      place-content: center;
+      color: #ECE5D8;
+      background-color: #25313F;
+      line-height: 2em;
+      &.is-end {
+        opacity: 0;
+        transition: opacity ease 300ms;
+        &::before {
+          clip-path: xywh(0 0 100% 100%);
+          animation-play-state: paused;
+        }
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: bolder;
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 4px solid #ECE5D8F0;
+        clip-path: xywh(0 0 50% 50%);
+        width: 256px;
+        height: 256px;
+        border-radius: 128px;
+        pointer-events: none;
+        animation: app-init linear 2s infinite;
+      }
+      &::after {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 2px dashed #ECE5D860;
+        width: 254px;
+        height: 254px;
+        border-radius: 128px;
+        pointer-events: none;
+      }
+    }
+  </style>
 </head>
-<body class="fullscreen">
-  <div id="app" class="w-full h-full grid place-items-center overflow-hidden"></div>
+
+<body>
+  <div id="app">
+    <div id="first-loading">
+      <h1>初始化应用</h1>
+      <div>前面的区域，马上就能探索~</div>
+    </div>
+  </div>
+
+  <script type="module" async defer>
+    const text = (() => {
+      if (!window.isSecureContext)
+        return '网站处于非安全上下文中，Web 应用无法正常运行。'
+      return ''
+    })()
+
+    const app = document.getElementById('app')
+    const loading = document.getElementById('first-loading')
+
+    if (text) {
+      app.removeChild(loading)
+      app.innerText = text
+    }
+    else {
+      import('./src/main.ts')
+    }
+  </script>
 </body>
 </html>

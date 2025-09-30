@@ -1,13 +1,22 @@
 <script lang="ts" setup>
-import { AppBreadCrumb, AppLogo, AppSidemenu, AppUserAvatar } from '@/components'
-import { useTheme } from '@/hooks'
+import {
+  AppBreadCrumb,
+  AppLogo,
+  AppNotice,
+  AppSidemenu,
+  AppUpdatePush,
+  AppUserAvatar,
+} from '@/components'
 import { LayoutAside, LayoutHeader, LayoutPage } from '@/layout'
+import { useAccessStore } from '@/stores'
 
-// TODO: 管理这边还没适配黑暗模式，先这么用着
-const { isDark } = useTheme()
-onBeforeMount(() => {
-  isDark.value = false
-})
+import {
+  CurrentTime,
+  DarkModeSwitch,
+  SettingButton,
+} from './components'
+
+const accessStore = useAccessStore()
 </script>
 
 <template>
@@ -20,9 +29,17 @@ onBeforeMount(() => {
     </LayoutAside>
 
     <LayoutHeader>
-      <div class="h-full flex-1 flex items-center justify-between text-sm px-4 gap-4">
+      <div class="h-full flex-1 flex items-center justify-between text-sm px-4 flex-wrap">
         <AppBreadCrumb class="flex-1" />
-        <AppUserAvatar />
+
+        <div class="flex-1 flex justify-end items-center gap-1">
+          <CurrentTime />
+          <AppUpdatePush v-if="accessStore.get('ADMIN_COMPONENT')" title="推送应用更新" />
+          <AppNotice title="公告" />
+          <SettingButton title="设置" />
+          <DarkModeSwitch title="黑暗模式" />
+          <AppUserAvatar />
+        </div>
       </div>
     </LayoutHeader>
 
@@ -33,7 +50,7 @@ onBeforeMount(() => {
 <style lang="scss" scoped>
 // TODO: 变量抽离
 .layout-contianer {
-  --c-aside-width: 120px;
+  --c-aside-width: 160px;
   --c-aside-shadow: 0 2px 8px #1d23290d;
   --c-header-height: 60px;
   --c-header-shdow: 2px 0 8px #1d23290d;
